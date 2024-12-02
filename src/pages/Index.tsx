@@ -13,6 +13,7 @@ const Index = () => {
     audioData,
     recordedAudio,
     feedback,
+    countdown,
     startRecording,
     stopRecording,
     playRecording,
@@ -23,6 +24,7 @@ const Index = () => {
     isRecording: isRecordingVideo,
     recordedVideo,
     feedback: videoFeedback,
+    countdown: videoCountdown,
     startRecording: startVideoRecording,
     stopRecording: stopVideoRecording,
     playRecording: playVideoRecording,
@@ -41,6 +43,7 @@ const Index = () => {
               audioData={audioData}
               isRecording={isRecording}
               recordedAudio={recordedAudio}
+              countdown={countdown}
               onStartRecording={startRecording}
               onStopRecording={stopRecording}
               onPlayRecording={playRecording}
@@ -54,6 +57,7 @@ const Index = () => {
             <VideoRecordingSection
               isRecording={isRecordingVideo}
               recordedVideo={recordedVideo}
+              countdown={videoCountdown}
               onStartRecording={startVideoRecording}
               onStopRecording={stopVideoRecording}
               onPlayRecording={playVideoRecording}
