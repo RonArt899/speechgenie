@@ -98,7 +98,8 @@ export const useVideoRecording = () => {
         closing: "Strong conclusion that reinforces main message.",
         tone: "Professional and authentic tone that connects with audience.",
       },
-      score: 88
+      score: 88,
+      transcript: "Good morning everyone, I'm excited to present our latest project findings. Our research has shown significant improvements in user engagement metrics. The key takeaway is that our new approach has resulted in a 40% increase in user satisfaction. Thank you for your time."
     };
     
     setFeedback(mockFeedback);

@@ -17,6 +17,7 @@ interface SpeechFeedbackProps {
       tone: string;
     };
     score: number;
+    transcript?: string;
   } | null;
 }
 
@@ -79,6 +80,16 @@ const SpeechFeedback: React.FC<SpeechFeedbackProps> = ({ feedback }) => {
             </div>
           </div>
         </div>
+
+        {feedback.transcript && (
+          <>
+            <Separator />
+            <div className="space-y-3">
+              <h4 className="font-medium">Transcript</h4>
+              <p className="text-sm whitespace-pre-wrap">{feedback.transcript}</p>
+            </div>
+          </>
+        )}
       </div>
     </Card>
   );

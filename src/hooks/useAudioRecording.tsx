@@ -108,7 +108,8 @@ export const useAudioRecording = () => {
         closing: "Conclusion summarizes key points well.",
         tone: "Professional and engaging tone throughout the presentation.",
       },
-      score: 85
+      score: 85,
+      transcript: "Hello everyone, today I want to talk about the importance of public speaking. It's a crucial skill that can help us in many aspects of our lives, from professional presentations to personal interactions. Thank you for your attention."
     };
     
     setFeedback(mockFeedback);
