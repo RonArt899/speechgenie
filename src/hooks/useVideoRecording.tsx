@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useRef, useState } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 import { useRecordingState } from './useRecordingState';
 import { useVideoAnalysis } from './useVideoAnalysis';
