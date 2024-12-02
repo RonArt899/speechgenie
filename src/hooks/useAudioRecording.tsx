@@ -1,37 +1,29 @@
-import { useState, useRef, useCallback } from 'react';
+import { useRef } from 'react';
 import { useToast } from "@/components/ui/use-toast";
-import { pipeline } from "@huggingface/transformers";
+import { useRecordingState } from './useRecordingState';
+import { useAudioAnalysis } from './useAudioAnalysis';
 
 export const useAudioRecording = () => {
-  const [isRecording, setIsRecording] = useState(false);
   const [audioData, setAudioData] = useState<Float32Array | null>(null);
   const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
-  const [feedback, setFeedback] = useState(null);
-  const [countdown, setCountdown] = useState(0);
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
   const analyser = useRef<AnalyserNode | null>(null);
   const dataArray = useRef<Float32Array | null>(null);
   const animationFrame = useRef<number>();
-  const transcriber = useRef<any>(null);
   const { toast } = useToast();
 
-  const initializeTranscriber = async () => {
-    try {
-      transcriber.current = await pipeline(
-        "automatic-speech-recognition",
-        "openai/whisper-tiny.en"
-      );
-    } catch (err) {
-      console.error("Failed to initialize transcriber:", err);
-      toast({
-        variant: "destructive",
-        title: "Error",
-        description: "Could not initialize speech recognition",
-      });
-    }
-  };
+  const { 
+    isRecording, 
+    setIsRecording, 
+    countdown, 
+    feedback, 
+    setFeedback, 
+    startCountdown 
+  } = useRecordingState();
+
+  const { analyzeSpeech } = useAudioAnalysis();
 
   const updateAudioData = () => {
     if (analyser.current && dataArray.current) {
@@ -56,10 +48,11 @@ export const useAudioRecording = () => {
       
       const chunks: BlobPart[] = [];
       mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.current.onstop = () => {
+      mediaRecorder.current.onstop = async () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setRecordedAudio(blob);
-        analyzeSpeech(blob);
+        const result = await analyzeSpeech(blob);
+        if (result) setFeedback(result);
       };
       
       return true;
@@ -74,21 +67,10 @@ export const useAudioRecording = () => {
   };
 
   const startRecording = async () => {
-    setCountdown(5);
-    const countdownInterval = setInterval(() => {
-      setCountdown(prev => {
-        if (prev <= 1) {
-          clearInterval(countdownInterval);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
+    startCountdown(async () => {
+      const success = await initializeRecording();
+      if (!success) return;
 
-    const success = await initializeRecording();
-    if (!success) return;
-
-    setTimeout(() => {
       if (mediaRecorder.current) {
         mediaRecorder.current.start();
         setIsRecording(true);
@@ -99,7 +81,7 @@ export const useAudioRecording = () => {
           description: "Speak clearly into your microphone",
         });
       }
-    }, 5000);
+    });
   };
 
   const stopRecording = () => {
@@ -108,53 +90,6 @@ export const useAudioRecording = () => {
       mediaRecorder.current.stream.getTracks().forEach(track => track.stop());
       setIsRecording(false);
       cancelAnimationFrame(animationFrame.current!);
-    }
-  };
-
-  const analyzeSpeech = async (audioBlob: Blob) => {
-    try {
-      let transcript = "";
-      
-      if (transcriber.current) {
-        const result = await transcriber.current(audioBlob);
-        transcript = result.text;
-      } else {
-        await initializeTranscriber();
-        if (transcriber.current) {
-          const result = await transcriber.current(audioBlob);
-          transcript = result.text;
-        }
-      }
-
-      const mockFeedback = {
-        delivery: {
-          rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
-          volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
-          melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
-        },
-        content: {
-          structure: "Clear organization with logical flow between main points.",
-          opening: "Strong opening that captures attention effectively.",
-          closing: "Conclusion summarizes key points well.",
-          tone: "Professional and engaging tone throughout the presentation.",
-        },
-        score: 85,
-        transcript: transcript || "Transcription unavailable. Please try recording again.",
-      };
-      
-      setFeedback(mockFeedback);
-      
-      toast({
-        title: "Analysis Complete",
-        description: "Your speech has been analyzed successfully.",
-      });
-    } catch (err) {
-      console.error("Speech analysis error:", err);
-      toast({
-        variant: "destructive",
-        title: "Analysis Error",
-        description: "Failed to analyze speech. Please try again.",
-      });
     }
   };
 
