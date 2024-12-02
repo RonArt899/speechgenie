@@ -27,7 +27,7 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
           onClick={onStartRecording}
           className="animate-scale-up"
         >
-          <Mic className="mr-2 h-5 w-5" />
+          <Mic className="mr-2 h-5 w-5 text-white" />
           Start Recording
         </Button>
       )}
@@ -39,7 +39,7 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
           onClick={onStopRecording}
           className="animate-pulse"
         >
-          <Square className="mr-2 h-5 w-5" />
+          <Square className="mr-2 h-5 w-5 text-white" />
           Stop Recording
         </Button>
       )}
@@ -47,7 +47,7 @@ const RecordingControls: React.FC<RecordingControlsProps> = ({
       {recordedAudio && !isRecording && (
         <>
           <Button size="lg" onClick={onPlayRecording}>
-            <Play className="mr-2 h-5 w-5" />
+            <Play className="mr-2 h-5 w-5 text-white" />
             Play Recording
           </Button>
           <Button size="lg" variant="outline" onClick={onResetRecording}>
