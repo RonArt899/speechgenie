@@ -5,7 +5,7 @@ const Header = () => {
     <div className="w-full space-y-8">
       <div className="flex justify-center py-4">
         <img 
-          src="lovable-uploads/verble-logo.png" 
+          src="https://www.verble.app/assets/files/logo-rgb-1.1920x0x0x100.png" 
           alt="Verble Logo" 
           className="h-[30px] w-auto"
           style={{
