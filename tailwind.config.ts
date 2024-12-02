@@ -25,9 +25,10 @@ export default {
         background: "hsl(var(--background))",
         foreground: "hsl(var(--foreground))",
         primary: {
-          DEFAULT: "hsl(var(--primary))",
+          DEFAULT: "#006DFF",
           foreground: "hsl(var(--primary-foreground))",
         },
+        textColor: "#323F4B",
         secondary: {
           DEFAULT: "hsl(var(--secondary))",
           foreground: "hsl(var(--secondary-foreground))",
@@ -52,6 +53,13 @@ export default {
           DEFAULT: "hsl(var(--card))",
           foreground: "hsl(var(--card-foreground))",
         },
+      },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
+      fontSize: {
+        'body': ['16px', '24px'],
+        'header': ['24px', '32px'],
       },
       keyframes: {
         "accordion-down": {
