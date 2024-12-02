@@ -112,7 +112,7 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background p-6 md:p-12">
       <div className="max-w-3xl mx-auto space-y-8">
-        <div className="w-full h-[600px] relative overflow-hidden rounded-lg mb-8">
+        <div className="w-full h-[300px] relative overflow-hidden rounded-lg mb-8">
           <img 
             src="/lovable-uploads/4d352a17-c70d-4474-bd1e-282705449c59.png" 
             alt="Public speaker addressing an audience" 
