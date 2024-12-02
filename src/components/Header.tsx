@@ -10,8 +10,8 @@ const Header = () => {
       />
       <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
         <div className="text-center text-white p-6">
-          <h1 className="text-4xl font-bold tracking-tight mb-2">Speech Practice</h1>
-          <p className="text-xl text-white/90">
+          <h1 className="text-4xl font-bold tracking-tight mb-2 text-white">Speech Practice</h1>
+          <p className="text-xl text-white">
             Record your speech and get AI-powered feedback
           </p>
         </div>
