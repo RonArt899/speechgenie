@@ -1,11 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { Mic, Square, Play, RotateCcw } from "lucide-react";
 import { useToast } from "@/components/ui/use-toast";
-import AudioVisualizer from '@/components/AudioVisualizer';
+import Header from '@/components/Header';
+import RecordingSection from '@/components/RecordingSection';
 import SpeechFeedback from '@/components/SpeechFeedback';
-import { pipeline } from "@huggingface/transformers";
 
 const Index = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -112,64 +109,16 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background p-6 md:p-12">
       <div className="max-w-3xl mx-auto space-y-8">
-        <div className="w-full h-[300px] relative overflow-hidden rounded-lg mb-8">
-          <img 
-            src="/lovable-uploads/4d352a17-c70d-4474-bd1e-282705449c59.png" 
-            alt="Public speaker addressing an audience" 
-            className="w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-            <div className="text-center text-white p-6">
-              <h1 className="text-4xl font-bold tracking-tight mb-2">Speech Practice</h1>
-              <p className="text-xl text-white/90">
-                Record your speech and get AI-powered feedback
-              </p>
-            </div>
-          </div>
-        </div>
-
-        <Card className="p-6 space-y-6">
-          <AudioVisualizer audioData={audioData} />
-          
-          <div className="flex justify-center gap-4">
-            {!isRecording && !recordedAudio && (
-              <Button
-                size="lg"
-                onClick={startRecording}
-                className="animate-scale-up"
-              >
-                <Mic className="mr-2 h-5 w-5" />
-                Start Recording
-              </Button>
-            )}
-            
-            {isRecording && (
-              <Button
-                size="lg"
-                variant="destructive"
-                onClick={stopRecording}
-                className="animate-pulse"
-              >
-                <Square className="mr-2 h-5 w-5" />
-                Stop Recording
-              </Button>
-            )}
-            
-            {recordedAudio && !isRecording && (
-              <>
-                <Button size="lg" onClick={playRecording}>
-                  <Play className="mr-2 h-5 w-5" />
-                  Play Recording
-                </Button>
-                <Button size="lg" variant="outline" onClick={resetRecording}>
-                  <RotateCcw className="mr-2 h-5 w-5" />
-                  New Recording
-                </Button>
-              </>
-            )}
-          </div>
-        </Card>
-
+        <Header />
+        <RecordingSection
+          audioData={audioData}
+          isRecording={isRecording}
+          recordedAudio={recordedAudio}
+          onStartRecording={startRecording}
+          onStopRecording={stopRecording}
+          onPlayRecording={playRecording}
+          onResetRecording={resetRecording}
+        />
         {feedback && <SpeechFeedback feedback={feedback} />}
       </div>
     </div>
