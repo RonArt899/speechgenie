@@ -4,7 +4,6 @@ import { Separator } from '@/components/ui/separator';
 import FeedbackHeader from './feedback/FeedbackHeader';
 import FeedbackSection from './feedback/FeedbackSection';
 import FeedbackItem from './feedback/FeedbackItem';
-import TranscriptSection from './feedback/TranscriptSection';
 
 interface VideoFeedbackProps {
   feedback: {
@@ -27,7 +26,6 @@ interface VideoFeedbackProps {
       tone: string;
     };
     score: number;
-    transcript?: string;
   } | null;
 }
 
@@ -63,8 +61,6 @@ const VideoFeedback: React.FC<VideoFeedbackProps> = ({ feedback }) => {
           <FeedbackItem label="Closing" value={feedback.content.closing} />
           <FeedbackItem label="Tone of Voice" value={feedback.content.tone} />
         </FeedbackSection>
-
-        <TranscriptSection transcript={feedback.transcript} />
       </div>
     </Card>
   );
