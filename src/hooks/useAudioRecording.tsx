@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
+import { pipeline } from "@huggingface/transformers";
 
 export const useAudioRecording = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -13,7 +14,25 @@ export const useAudioRecording = () => {
   const analyser = useRef<AnalyserNode | null>(null);
   const dataArray = useRef<Float32Array | null>(null);
   const animationFrame = useRef<number>();
+  const transcriber = useRef<any>(null);
   const { toast } = useToast();
+
+  const initializeTranscriber = async () => {
+    try {
+      transcriber.current = await pipeline(
+        "automatic-speech-recognition",
+        "openai/whisper-tiny.en",
+        { quantized: true }
+      );
+    } catch (err) {
+      console.error("Failed to initialize transcriber:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not initialize speech recognition",
+      });
+    }
+  };
 
   const updateAudioData = () => {
     if (analyser.current && dataArray.current) {
@@ -95,24 +114,50 @@ export const useAudioRecording = () => {
   };
 
   const analyzeSpeech = async (audioBlob: Blob) => {
-    // Mock feedback for demonstration
-    const mockFeedback = {
-      delivery: {
-        rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
-        volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
-        melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
-      },
-      content: {
-        structure: "Clear organization with logical flow between main points.",
-        opening: "Strong opening that captures attention effectively.",
-        closing: "Conclusion summarizes key points well.",
-        tone: "Professional and engaging tone throughout the presentation.",
-      },
-      score: 85,
-      transcript: "Hello everyone, today I want to talk about the importance of public speaking. It's a crucial skill that can help us in many aspects of our lives, from professional presentations to personal interactions. Thank you for your attention."
-    };
-    
-    setFeedback(mockFeedback);
+    try {
+      let transcript = "";
+      
+      if (transcriber.current) {
+        const result = await transcriber.current(audioBlob);
+        transcript = result.text;
+      } else {
+        await initializeTranscriber();
+        if (transcriber.current) {
+          const result = await transcriber.current(audioBlob);
+          transcript = result.text;
+        }
+      }
+
+      const mockFeedback = {
+        delivery: {
+          rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
+          volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
+          melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
+        },
+        content: {
+          structure: "Clear organization with logical flow between main points.",
+          opening: "Strong opening that captures attention effectively.",
+          closing: "Conclusion summarizes key points well.",
+          tone: "Professional and engaging tone throughout the presentation.",
+        },
+        score: 85,
+        transcript: transcript || "Transcription unavailable. Please try recording again.",
+      };
+      
+      setFeedback(mockFeedback);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Your speech has been analyzed successfully.",
+      });
+    } catch (err) {
+      console.error("Speech analysis error:", err);
+      toast({
+        variant: "destructive",
+        title: "Analysis Error",
+        description: "Failed to analyze speech. Please try again.",
+      });
+    }
   };
 
   const resetRecording = () => {

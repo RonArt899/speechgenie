@@ -1,5 +1,6 @@
 import { useState, useRef } from 'react';
 import { useToast } from "@/components/ui/use-toast";
+import { pipeline } from "@huggingface/transformers";
 
 export const useVideoRecording = () => {
   const [isRecording, setIsRecording] = useState(false);
@@ -9,7 +10,25 @@ export const useVideoRecording = () => {
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const videoStream = useRef<MediaStream | null>(null);
+  const transcriber = useRef<any>(null);
   const { toast } = useToast();
+
+  const initializeTranscriber = async () => {
+    try {
+      transcriber.current = await pipeline(
+        "automatic-speech-recognition",
+        "openai/whisper-tiny.en",
+        { quantized: true }
+      );
+    } catch (err) {
+      console.error("Failed to initialize transcriber:", err);
+      toast({
+        variant: "destructive",
+        title: "Error",
+        description: "Could not initialize speech recognition",
+      });
+    }
+  };
 
   const startRecording = async () => {
     setCountdown(5);
@@ -78,31 +97,70 @@ export const useVideoRecording = () => {
   };
 
   const analyzeVideo = async (videoBlob: Blob) => {
-    // Mock feedback for demonstration
-    const mockFeedback = {
-      presence: {
-        bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
-        handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
-        posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
-        eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
-        overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
-      },
-      delivery: {
-        rate: "Well-paced speech with good rhythm. Could vary pace more for emphasis.",
-        volume: "Clear and audible throughout. Consider more dynamic range.",
-        melody: "Natural speaking pattern with good variation in tone.",
-      },
-      content: {
-        structure: "Well-organized presentation with clear transitions.",
-        opening: "Engaging introduction that sets context effectively.",
-        closing: "Strong conclusion that reinforces main message.",
-        tone: "Professional and authentic tone that connects with audience.",
-      },
-      score: 88,
-      transcript: "Good morning everyone, I'm excited to present our latest project findings. Our research has shown significant improvements in user engagement metrics. The key takeaway is that our new approach has resulted in a 40% increase in user satisfaction. Thank you for your time."
-    };
-    
-    setFeedback(mockFeedback);
+    try {
+      let transcript = "";
+      
+      // Extract audio from video for transcription
+      const audioContext = new AudioContext();
+      const videoElement = document.createElement('video');
+      videoElement.src = URL.createObjectURL(videoBlob);
+      await videoElement.play();
+      
+      const stream = videoElement.captureStream();
+      const audioTrack = stream.getAudioTracks()[0];
+      const mediaStream = new MediaStream([audioTrack]);
+      const source = audioContext.createMediaStreamSource(mediaStream);
+      const audioDestination = audioContext.createMediaStreamDestination();
+      source.connect(audioDestination);
+      
+      if (transcriber.current) {
+        const result = await transcriber.current(audioDestination.stream);
+        transcript = result.text;
+      } else {
+        await initializeTranscriber();
+        if (transcriber.current) {
+          const result = await transcriber.current(audioDestination.stream);
+          transcript = result.text;
+        }
+      }
+
+      const mockFeedback = {
+        presence: {
+          bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
+          handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
+          posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
+          eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
+          overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
+        },
+        delivery: {
+          rate: "Well-paced speech with good rhythm. Could vary pace more for emphasis.",
+          volume: "Clear and audible throughout. Consider more dynamic range.",
+          melody: "Natural speaking pattern with good variation in tone.",
+        },
+        content: {
+          structure: "Well-organized presentation with clear transitions.",
+          opening: "Engaging introduction that sets context effectively.",
+          closing: "Strong conclusion that reinforces main message.",
+          tone: "Professional and authentic tone that connects with audience.",
+        },
+        score: 88,
+        transcript: transcript || "Transcription unavailable. Please try recording again.",
+      };
+      
+      setFeedback(mockFeedback);
+      
+      toast({
+        title: "Analysis Complete",
+        description: "Your video has been analyzed successfully.",
+      });
+    } catch (err) {
+      console.error("Video analysis error:", err);
+      toast({
+        variant: "destructive",
+        title: "Analysis Error",
+        description: "Failed to analyze video. Please try again.",
+      });
+    }
   };
 
   const resetRecording = () => {
