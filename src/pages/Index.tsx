@@ -31,34 +31,36 @@ const Index = () => {
 
   return (
     <div className="min-h-screen bg-background p-6 md:p-12">
-      <div className="max-w-3xl mx-auto space-y-8">
+      <div className="max-w-7xl mx-auto space-y-8">
         <Header />
         
-        <div className="space-y-8">
-          <h2 className="text-2xl font-semibold">Audio Recording</h2>
-          <RecordingSection
-            audioData={audioData}
-            isRecording={isRecording}
-            recordedAudio={recordedAudio}
-            onStartRecording={startRecording}
-            onStopRecording={stopRecording}
-            onPlayRecording={playRecording}
-            onResetRecording={resetRecording}
-          />
-          {feedback && <SpeechFeedback feedback={feedback} />}
-        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="space-y-8">
+            <h2 className="text-2xl font-semibold">Audio Recording</h2>
+            <RecordingSection
+              audioData={audioData}
+              isRecording={isRecording}
+              recordedAudio={recordedAudio}
+              onStartRecording={startRecording}
+              onStopRecording={stopRecording}
+              onPlayRecording={playRecording}
+              onResetRecording={resetRecording}
+            />
+            {feedback && <SpeechFeedback feedback={feedback} />}
+          </div>
 
-        <div className="space-y-8">
-          <h2 className="text-2xl font-semibold">Video Recording</h2>
-          <VideoRecordingSection
-            isRecording={isRecordingVideo}
-            recordedVideo={recordedVideo}
-            onStartRecording={startVideoRecording}
-            onStopRecording={stopVideoRecording}
-            onPlayRecording={playVideoRecording}
-            onResetRecording={resetVideoRecording}
-          />
-          {videoFeedback && <VideoFeedback feedback={videoFeedback} />}
+          <div className="space-y-8">
+            <h2 className="text-2xl font-semibold">Video Recording</h2>
+            <VideoRecordingSection
+              isRecording={isRecordingVideo}
+              recordedVideo={recordedVideo}
+              onStartRecording={startVideoRecording}
+              onStopRecording={stopVideoRecording}
+              onPlayRecording={playVideoRecording}
+              onResetRecording={resetVideoRecording}
+            />
+            {videoFeedback && <VideoFeedback feedback={videoFeedback} />}
+          </div>
         </div>
       </div>
     </div>
