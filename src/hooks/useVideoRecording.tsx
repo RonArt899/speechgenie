@@ -5,12 +5,24 @@ export const useVideoRecording = () => {
   const [isRecording, setIsRecording] = useState(false);
   const [recordedVideo, setRecordedVideo] = useState<Blob | null>(null);
   const [feedback, setFeedback] = useState(null);
+  const [countdown, setCountdown] = useState(0);
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const videoStream = useRef<MediaStream | null>(null);
   const { toast } = useToast();
 
   const startRecording = async () => {
+    setCountdown(5);
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: true,
@@ -34,13 +46,18 @@ export const useVideoRecording = () => {
         videoPreview.srcObject = stream;
       }
       
-      mediaRecorder.current.start();
-      setIsRecording(true);
-      
-      toast({
-        title: "Video recording started",
-        description: "Speak clearly and maintain good posture",
-      });
+      // Wait for countdown to finish before starting recording
+      setTimeout(() => {
+        if (mediaRecorder.current) {
+          mediaRecorder.current.start();
+          setIsRecording(true);
+          
+          toast({
+            title: "Video recording started",
+            description: "Speak clearly and maintain good posture",
+          });
+        }
+      }, 5000);
     } catch (err) {
       toast({
         variant: "destructive",
@@ -104,6 +121,7 @@ export const useVideoRecording = () => {
     isRecording,
     recordedVideo,
     feedback,
+    countdown,
     startRecording,
     stopRecording,
     playRecording,

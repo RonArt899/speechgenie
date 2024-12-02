@@ -1,4 +1,4 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
 
 export const useAudioRecording = () => {
@@ -6,6 +6,7 @@ export const useAudioRecording = () => {
   const [audioData, setAudioData] = useState<Float32Array | null>(null);
   const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
   const [feedback, setFeedback] = useState(null);
+  const [countdown, setCountdown] = useState(0);
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -22,7 +23,7 @@ export const useAudioRecording = () => {
     }
   };
 
-  const startRecording = async () => {
+  const initializeRecording = async () => {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       mediaRecorder.current = new MediaRecorder(stream);
@@ -43,21 +44,45 @@ export const useAudioRecording = () => {
         analyzeSpeech(blob);
       };
       
-      mediaRecorder.current.start();
-      setIsRecording(true);
-      updateAudioData();
-      
-      toast({
-        title: "Recording started",
-        description: "Speak clearly into your microphone",
-      });
+      return true;
     } catch (err) {
       toast({
         variant: "destructive",
         title: "Error",
         description: "Could not access microphone",
       });
+      return false;
     }
+  };
+
+  const startRecording = async () => {
+    setCountdown(5);
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    const success = await initializeRecording();
+    if (!success) return;
+
+    // Wait for countdown to finish before starting recording
+    setTimeout(() => {
+      if (mediaRecorder.current) {
+        mediaRecorder.current.start();
+        setIsRecording(true);
+        updateAudioData();
+        
+        toast({
+          title: "Recording started",
+          description: "Speak clearly into your microphone",
+        });
+      }
+    }, 5000);
   };
 
   const stopRecording = () => {
@@ -107,6 +132,7 @@ export const useAudioRecording = () => {
     audioData,
     recordedAudio,
     feedback,
+    countdown,
     startRecording,
     stopRecording,
     playRecording,

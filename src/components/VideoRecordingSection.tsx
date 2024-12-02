@@ -1,10 +1,12 @@
 import React from 'react';
 import { Card } from "@/components/ui/card";
 import VideoRecordingControls from './VideoRecordingControls';
+import Countdown from './Countdown';
 
 interface VideoRecordingSectionProps {
   isRecording: boolean;
   recordedVideo: Blob | null;
+  countdown: number;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onPlayRecording: () => void;
@@ -14,6 +16,7 @@ interface VideoRecordingSectionProps {
 const VideoRecordingSection: React.FC<VideoRecordingSectionProps> = ({
   isRecording,
   recordedVideo,
+  countdown,
   onStartRecording,
   onStopRecording,
   onPlayRecording,
@@ -45,6 +48,7 @@ const VideoRecordingSection: React.FC<VideoRecordingSectionProps> = ({
         onPlayRecording={onPlayRecording}
         onResetRecording={onResetRecording}
       />
+      <Countdown count={countdown} />
     </Card>
   );
 };

@@ -2,11 +2,13 @@ import React from 'react';
 import { Card } from "@/components/ui/card";
 import AudioVisualizer from './AudioVisualizer';
 import RecordingControls from './RecordingControls';
+import Countdown from './Countdown';
 
 interface RecordingSectionProps {
   audioData: Float32Array | null;
   isRecording: boolean;
   recordedAudio: Blob | null;
+  countdown: number;
   onStartRecording: () => void;
   onStopRecording: () => void;
   onPlayRecording: () => void;
@@ -17,6 +19,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({
   audioData,
   isRecording,
   recordedAudio,
+  countdown,
   onStartRecording,
   onStopRecording,
   onPlayRecording,
@@ -33,6 +36,7 @@ const RecordingSection: React.FC<RecordingSectionProps> = ({
         onPlayRecording={onPlayRecording}
         onResetRecording={onResetRecording}
       />
+      <Countdown count={countdown} />
     </Card>
   );
 };
