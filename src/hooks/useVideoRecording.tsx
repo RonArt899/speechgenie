@@ -17,8 +17,7 @@ export const useVideoRecording = () => {
     try {
       transcriber.current = await pipeline(
         "automatic-speech-recognition",
-        "openai/whisper-tiny.en",
-        { quantized: true }
+        "openai/whisper-tiny.en"
       );
     } catch (err) {
       console.error("Failed to initialize transcriber:", err);
@@ -104,55 +103,78 @@ export const useVideoRecording = () => {
       const audioContext = new AudioContext();
       const videoElement = document.createElement('video');
       videoElement.src = URL.createObjectURL(videoBlob);
-      await videoElement.play();
       
-      const stream = videoElement.captureStream();
-      const audioTrack = stream.getAudioTracks()[0];
-      const mediaStream = new MediaStream([audioTrack]);
-      const source = audioContext.createMediaStreamSource(mediaStream);
+      // Wait for metadata to load
+      await new Promise((resolve) => {
+        videoElement.onloadedmetadata = resolve;
+      });
+      
+      // Create MediaElementAudioSourceNode
+      await videoElement.play();
+      const source = audioContext.createMediaElementSource(videoElement);
       const audioDestination = audioContext.createMediaStreamDestination();
       source.connect(audioDestination);
       
-      if (transcriber.current) {
-        const result = await transcriber.current(audioDestination.stream);
-        transcript = result.text;
-      } else {
-        await initializeTranscriber();
+      // Record audio stream
+      const audioRecorder = new MediaRecorder(audioDestination.stream);
+      const audioChunks: BlobPart[] = [];
+      
+      audioRecorder.ondataavailable = (e) => audioChunks.push(e.data);
+      audioRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+        
         if (transcriber.current) {
-          const result = await transcriber.current(audioDestination.stream);
+          const result = await transcriber.current(audioBlob);
           transcript = result.text;
+        } else {
+          await initializeTranscriber();
+          if (transcriber.current) {
+            const result = await transcriber.current(audioBlob);
+            transcript = result.text;
+          }
         }
-      }
-
-      const mockFeedback = {
-        presence: {
-          bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
-          handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
-          posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
-          eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
-          overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
-        },
-        delivery: {
-          rate: "Well-paced speech with good rhythm. Could vary pace more for emphasis.",
-          volume: "Clear and audible throughout. Consider more dynamic range.",
-          melody: "Natural speaking pattern with good variation in tone.",
-        },
-        content: {
-          structure: "Well-organized presentation with clear transitions.",
-          opening: "Engaging introduction that sets context effectively.",
-          closing: "Strong conclusion that reinforces main message.",
-          tone: "Professional and authentic tone that connects with audience.",
-        },
-        score: 88,
-        transcript: transcript || "Transcription unavailable. Please try recording again.",
+        
+        const mockFeedback = {
+          presence: {
+            bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
+            handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
+            posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
+            eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
+            overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
+          },
+          delivery: {
+            rate: "Well-paced speech with good rhythm. Could vary pace more for emphasis.",
+            volume: "Clear and audible throughout. Consider more dynamic range.",
+            melody: "Natural speaking pattern with good variation in tone.",
+          },
+          content: {
+            structure: "Well-organized presentation with clear transitions.",
+            opening: "Engaging introduction that sets context effectively.",
+            closing: "Strong conclusion that reinforces main message.",
+            tone: "Professional and authentic tone that connects with audience.",
+          },
+          score: 88,
+          transcript: transcript || "Transcription unavailable. Please try recording again.",
+        };
+        
+        setFeedback(mockFeedback);
+        
+        toast({
+          title: "Analysis Complete",
+          description: "Your video has been analyzed successfully.",
+        });
       };
       
-      setFeedback(mockFeedback);
+      // Start recording audio and play video
+      audioRecorder.start();
+      await videoElement.play();
       
-      toast({
-        title: "Analysis Complete",
-        description: "Your video has been analyzed successfully.",
-      });
+      // Stop recording when video ends
+      videoElement.onended = () => {
+        audioRecorder.stop();
+        videoElement.remove();
+      };
+      
     } catch (err) {
       console.error("Video analysis error:", err);
       toast({

@@ -21,8 +21,7 @@ export const useAudioRecording = () => {
     try {
       transcriber.current = await pipeline(
         "automatic-speech-recognition",
-        "openai/whisper-tiny.en",
-        { quantized: true }
+        "openai/whisper-tiny.en"
       );
     } catch (err) {
       console.error("Failed to initialize transcriber:", err);
@@ -89,7 +88,6 @@ export const useAudioRecording = () => {
     const success = await initializeRecording();
     if (!success) return;
 
-    // Wait for countdown to finish before starting recording
     setTimeout(() => {
       if (mediaRecorder.current) {
         mediaRecorder.current.start();
