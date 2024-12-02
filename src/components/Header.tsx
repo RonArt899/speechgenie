@@ -5,7 +5,7 @@ const Header = () => {
     <div className="w-full space-y-8">
       <div className="flex justify-center py-4">
         <img 
-          src="/lovable-uploads/verble-logo.png" 
+          src="lovable-uploads/verble-logo.png" 
           alt="Verble Logo" 
           className="h-[30px] w-auto"
           style={{
