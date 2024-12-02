@@ -1,7 +1,10 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
+import FeedbackHeader from './feedback/FeedbackHeader';
+import FeedbackSection from './feedback/FeedbackSection';
+import FeedbackItem from './feedback/FeedbackItem';
+import TranscriptSection from './feedback/TranscriptSection';
 
 interface SpeechFeedbackProps {
   feedback: {
@@ -26,70 +29,25 @@ const SpeechFeedback: React.FC<SpeechFeedbackProps> = ({ feedback }) => {
 
   return (
     <Card className="p-6 space-y-4 animate-fade-in">
-      <div className="flex items-center justify-between">
-        <h3 className="text-lg font-semibold">Speech Analysis</h3>
-        <Badge variant="secondary" className="text-sm">
-          Score: {feedback.score}/100
-        </Badge>
-      </div>
+      <FeedbackHeader title="Speech Analysis" score={feedback.score} />
       
       <div className="space-y-6">
-        <div className="space-y-3">
-          <h4 className="font-medium">Part 1: Speech Delivery</h4>
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Speech Rate</p>
-              <p className="text-sm">{feedback.delivery.rate}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Volume</p>
-              <p className="text-sm">{feedback.delivery.volume}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Melody</p>
-              <p className="text-sm">{feedback.delivery.melody}</p>
-            </div>
-          </div>
-        </div>
+        <FeedbackSection title="Part 1: Speech Delivery">
+          <FeedbackItem label="Speech Rate" value={feedback.delivery.rate} />
+          <FeedbackItem label="Volume" value={feedback.delivery.volume} />
+          <FeedbackItem label="Melody" value={feedback.delivery.melody} />
+        </FeedbackSection>
 
         <Separator />
         
-        <div className="space-y-3">
-          <h4 className="font-medium">Part 2: Content Analysis</h4>
-          <div className="space-y-2">
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Structure</p>
-              <p className="text-sm">{feedback.content.structure}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Opening</p>
-              <p className="text-sm">{feedback.content.opening}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Closing</p>
-              <p className="text-sm">{feedback.content.closing}</p>
-            </div>
-            
-            <div className="space-y-1">
-              <p className="text-sm font-medium text-muted-foreground">Tone of Voice</p>
-              <p className="text-sm">{feedback.content.tone}</p>
-            </div>
-          </div>
-        </div>
+        <FeedbackSection title="Part 2: Content Analysis">
+          <FeedbackItem label="Structure" value={feedback.content.structure} />
+          <FeedbackItem label="Opening" value={feedback.content.opening} />
+          <FeedbackItem label="Closing" value={feedback.content.closing} />
+          <FeedbackItem label="Tone of Voice" value={feedback.content.tone} />
+        </FeedbackSection>
 
-        {feedback.transcript && (
-          <>
-            <Separator />
-            <div className="space-y-3">
-              <h4 className="font-medium">Transcript</h4>
-              <p className="text-sm whitespace-pre-wrap">{feedback.transcript}</p>
-            </div>
-          </>
-        )}
+        <TranscriptSection transcript={feedback.transcript} />
       </div>
     </Card>
   );
