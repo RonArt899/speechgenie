@@ -1,11 +1,12 @@
-import { useRef, useState } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { useToast } from "@/components/ui/use-toast";
-import { useRecordingState } from './useRecordingState';
-import { useAudioAnalysis } from './useAudioAnalysis';
 
 export const useAudioRecording = () => {
+  const [isRecording, setIsRecording] = useState(false);
   const [audioData, setAudioData] = useState<Float32Array | null>(null);
   const [recordedAudio, setRecordedAudio] = useState<Blob | null>(null);
+  const [feedback, setFeedback] = useState(null);
+  const [countdown, setCountdown] = useState(0);
   
   const mediaRecorder = useRef<MediaRecorder | null>(null);
   const audioContext = useRef<AudioContext | null>(null);
@@ -13,17 +14,6 @@ export const useAudioRecording = () => {
   const dataArray = useRef<Float32Array | null>(null);
   const animationFrame = useRef<number>();
   const { toast } = useToast();
-
-  const { 
-    isRecording, 
-    setIsRecording, 
-    countdown, 
-    feedback, 
-    setFeedback, 
-    startCountdown 
-  } = useRecordingState();
-
-  const { analyzeSpeech } = useAudioAnalysis();
 
   const updateAudioData = () => {
     if (analyser.current && dataArray.current) {
@@ -48,11 +38,10 @@ export const useAudioRecording = () => {
       
       const chunks: BlobPart[] = [];
       mediaRecorder.current.ondataavailable = (e) => chunks.push(e.data);
-      mediaRecorder.current.onstop = async () => {
+      mediaRecorder.current.onstop = () => {
         const blob = new Blob(chunks, { type: 'audio/webm' });
         setRecordedAudio(blob);
-        const result = await analyzeSpeech(blob);
-        if (result) setFeedback(result);
+        analyzeSpeech(blob);
       };
       
       return true;
@@ -67,10 +56,22 @@ export const useAudioRecording = () => {
   };
 
   const startRecording = async () => {
-    startCountdown(async () => {
-      const success = await initializeRecording();
-      if (!success) return;
+    setCountdown(5);
+    const countdownInterval = setInterval(() => {
+      setCountdown(prev => {
+        if (prev <= 1) {
+          clearInterval(countdownInterval);
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
 
+    const success = await initializeRecording();
+    if (!success) return;
+
+    // Wait for countdown to finish before starting recording
+    setTimeout(() => {
       if (mediaRecorder.current) {
         mediaRecorder.current.start();
         setIsRecording(true);
@@ -81,7 +82,7 @@ export const useAudioRecording = () => {
           description: "Speak clearly into your microphone",
         });
       }
-    });
+    }, 5000);
   };
 
   const stopRecording = () => {
@@ -91,6 +92,26 @@ export const useAudioRecording = () => {
       setIsRecording(false);
       cancelAnimationFrame(animationFrame.current!);
     }
+  };
+
+  const analyzeSpeech = async (audioBlob: Blob) => {
+    // Mock feedback for demonstration
+    const mockFeedback = {
+      delivery: {
+        rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
+        volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
+        melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
+      },
+      content: {
+        structure: "Clear organization with logical flow between main points.",
+        opening: "Strong opening that captures attention effectively.",
+        closing: "Conclusion summarizes key points well.",
+        tone: "Professional and engaging tone throughout the presentation.",
+      },
+      score: 85
+    };
+    
+    setFeedback(mockFeedback);
   };
 
   const resetRecording = () => {
