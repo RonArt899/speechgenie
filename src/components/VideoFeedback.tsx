@@ -1,14 +1,28 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface VideoFeedbackProps {
   feedback: {
-    bodyLanguage: string;
-    handGestures: string;
-    posture: string;
-    eyeContact: string;
-    overallPresence: string;
+    presence: {
+      bodyLanguage: string;
+      handGestures: string;
+      posture: string;
+      eyeContact: string;
+      overallPresence: string;
+    };
+    delivery: {
+      rate: string;
+      volume: string;
+      melody: string;
+    };
+    content: {
+      structure: string;
+      opening: string;
+      closing: string;
+      tone: string;
+    };
     score: number;
   } | null;
 }
@@ -25,30 +39,84 @@ const VideoFeedback: React.FC<VideoFeedbackProps> = ({ feedback }) => {
         </Badge>
       </div>
       
-      <div className="space-y-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Body Language</p>
-          <p className="text-sm">{feedback.bodyLanguage}</p>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h4 className="font-medium">Part 1: Physical Presence</h4>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Body Language</p>
+              <p className="text-sm">{feedback.presence.bodyLanguage}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Hand Gestures</p>
+              <p className="text-sm">{feedback.presence.handGestures}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Posture</p>
+              <p className="text-sm">{feedback.presence.posture}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Eye Contact</p>
+              <p className="text-sm">{feedback.presence.eyeContact}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Overall Presence</p>
+              <p className="text-sm">{feedback.presence.overallPresence}</p>
+            </div>
+          </div>
         </div>
+
+        <Separator />
         
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Hand Gestures</p>
-          <p className="text-sm">{feedback.handGestures}</p>
+        <div className="space-y-3">
+          <h4 className="font-medium">Part 2: Speech Delivery</h4>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Speech Rate</p>
+              <p className="text-sm">{feedback.delivery.rate}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Volume</p>
+              <p className="text-sm">{feedback.delivery.volume}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Melody</p>
+              <p className="text-sm">{feedback.delivery.melody}</p>
+            </div>
+          </div>
         </div>
+
+        <Separator />
         
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Posture</p>
-          <p className="text-sm">{feedback.posture}</p>
-        </div>
-        
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Eye Contact</p>
-          <p className="text-sm">{feedback.eyeContact}</p>
-        </div>
-        
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Overall Presence</p>
-          <p className="text-sm">{feedback.overallPresence}</p>
+        <div className="space-y-3">
+          <h4 className="font-medium">Part 3: Content Analysis</h4>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Structure</p>
+              <p className="text-sm">{feedback.content.structure}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Opening</p>
+              <p className="text-sm">{feedback.content.opening}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Closing</p>
+              <p className="text-sm">{feedback.content.closing}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Tone of Voice</p>
+              <p className="text-sm">{feedback.content.tone}</p>
+            </div>
+          </div>
         </div>
       </div>
     </Card>

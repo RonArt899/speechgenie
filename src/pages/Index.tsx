@@ -138,10 +138,17 @@ const Index = () => {
   const analyzeSpeech = async (audioBlob: Blob) => {
     // Mock feedback for demonstration
     const mockFeedback = {
-      rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
-      volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
-      melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
-      content: "Well-structured content with clear main points. Consider adding more specific examples.",
+      delivery: {
+        rate: "Your speech rate is moderate and easy to follow. Consider varying the pace for emphasis.",
+        volume: "Good volume level with consistent projection. Some variations could add more dynamism.",
+        melody: "Natural intonation patterns. Could benefit from more pitch variation in key points.",
+      },
+      content: {
+        structure: "Clear organization with logical flow between main points.",
+        opening: "Strong opening that captures attention effectively.",
+        closing: "Conclusion summarizes key points well.",
+        tone: "Professional and engaging tone throughout the presentation.",
+      },
       score: 85
     };
     
@@ -151,11 +158,24 @@ const Index = () => {
   const analyzeVideo = async (videoBlob: Blob) => {
     // Mock feedback for demonstration
     const mockFeedback = {
-      bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
-      handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
-      posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
-      eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
-      overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
+      presence: {
+        bodyLanguage: "Your body language appears confident and engaged. Try to maintain a more open stance.",
+        handGestures: "Good use of natural hand gestures. Consider using more purposeful gestures to emphasize key points.",
+        posture: "Excellent upright posture throughout most of the presentation. Minor slouching noticed occasionally.",
+        eyeContact: "Strong eye contact maintained. Remember to scan the entire audience periodically.",
+        overallPresence: "Commanding presence with room for more dynamic expression in key moments.",
+      },
+      delivery: {
+        rate: "Well-paced speech with good rhythm. Could vary pace more for emphasis.",
+        volume: "Clear and audible throughout. Consider more dynamic range.",
+        melody: "Natural speaking pattern with good variation in tone.",
+      },
+      content: {
+        structure: "Well-organized presentation with clear transitions.",
+        opening: "Engaging introduction that sets context effectively.",
+        closing: "Strong conclusion that reinforces main message.",
+        tone: "Professional and authentic tone that connects with audience.",
+      },
       score: 88
     };
     

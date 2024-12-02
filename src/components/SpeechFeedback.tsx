@@ -1,13 +1,21 @@
 import React from 'react';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
 
 interface SpeechFeedbackProps {
   feedback: {
-    rate: string;
-    volume: string;
-    melody: string;
-    content: string;
+    delivery: {
+      rate: string;
+      volume: string;
+      melody: string;
+    };
+    content: {
+      structure: string;
+      opening: string;
+      closing: string;
+      tone: string;
+    };
     score: number;
   } | null;
 }
@@ -24,25 +32,52 @@ const SpeechFeedback: React.FC<SpeechFeedbackProps> = ({ feedback }) => {
         </Badge>
       </div>
       
-      <div className="space-y-3">
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Speech Rate</p>
-          <p className="text-sm">{feedback.rate}</p>
+      <div className="space-y-6">
+        <div className="space-y-3">
+          <h4 className="font-medium">Part 1: Speech Delivery</h4>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Speech Rate</p>
+              <p className="text-sm">{feedback.delivery.rate}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Volume</p>
+              <p className="text-sm">{feedback.delivery.volume}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Melody</p>
+              <p className="text-sm">{feedback.delivery.melody}</p>
+            </div>
+          </div>
         </div>
+
+        <Separator />
         
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Volume</p>
-          <p className="text-sm">{feedback.volume}</p>
-        </div>
-        
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Melody</p>
-          <p className="text-sm">{feedback.melody}</p>
-        </div>
-        
-        <div className="space-y-1">
-          <p className="text-sm font-medium text-muted-foreground">Content Analysis</p>
-          <p className="text-sm">{feedback.content}</p>
+        <div className="space-y-3">
+          <h4 className="font-medium">Part 2: Content Analysis</h4>
+          <div className="space-y-2">
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Structure</p>
+              <p className="text-sm">{feedback.content.structure}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Opening</p>
+              <p className="text-sm">{feedback.content.opening}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Closing</p>
+              <p className="text-sm">{feedback.content.closing}</p>
+            </div>
+            
+            <div className="space-y-1">
+              <p className="text-sm font-medium text-muted-foreground">Tone of Voice</p>
+              <p className="text-sm">{feedback.content.tone}</p>
+            </div>
+          </div>
         </div>
       </div>
     </Card>
